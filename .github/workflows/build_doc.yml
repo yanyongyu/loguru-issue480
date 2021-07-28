@@ -1,0 +1,33 @@
+name: Build API Doc
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+          architecture: "x64"
+
+      - uses: Gr1N/setup-poetry@v4
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Set up dependencies
+        run: |
+          poetry install
+
+      - name: Build Doc
+        run: poetry run sphinx-build ./docs/ ./docs/_build/
